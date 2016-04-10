@@ -4,7 +4,6 @@ function getFibonacciSpherePoints(numPoints)
 {
     var points = [];
     var offset = 2.0 / numPoints;
-
     for (var i = 0; i < numPoints; i++)
     {
         var y = (i * offset) - 1 + (offset / 2);
