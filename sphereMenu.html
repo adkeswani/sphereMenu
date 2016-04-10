@@ -188,7 +188,12 @@
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
 
-        document.getElementById("test").innerHTML = JSON.stringify(getSphereVertices(39));
+        var points = getFibonacciSpherePoints(39);
+        for (i = 0; i < 39; i++)
+        {
+            document.getElementById("test").innerHTML += points[i] + "<br />";
+        }
+
         tick();
     }
 </script>
