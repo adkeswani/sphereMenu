@@ -125,9 +125,9 @@
         triangleVertexPositionBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
         var vertices = [
-             0.0,  2.0,  1.0,
-            -1.0, -1.0,  0.0,
-             1.0, -1.0,  0.0
+             0.0,  0.03,  0.03,
+            -0.03, -0.03,  0.0,
+             0.03, -0.03,  0.0
         ];
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
         triangleVertexPositionBuffer.itemSize = 3;
@@ -149,16 +149,24 @@
         gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        mat4.translate(mvMatrix, mvMatrix, vec3.fromValues(-0.001, 0.0, -0.001));
+        for (var i = 0; i < 390; i++)
+        {
+            mat4.identity(mvMatrix);
+            mat4.rotateY(mvMatrix, mvMatrix, currRotation);
+            mat4.translate(mvMatrix, mvMatrix, vec3.fromValues(points[i][0] * 1, points[i][1] * 1, points[i][2] * 1));
+            mat4.rotateY(mvMatrix, mvMatrix, currRotation * 5);
 
-        // Send vertex buffer to GL
-        gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
-        gl.vertexAttribPointer(shaderProgram.aVertexPosition, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0); 
-        setMatrixUniforms();
-        gl.drawArrays(gl.TRIANGLES, 0, triangleVertexPositionBuffer.numItems);
+            // Send vertex buffer to GL
+            gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
+            gl.vertexAttribPointer(shaderProgram.aVertexPosition, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0); 
+            setMatrixUniforms();
+            gl.drawArrays(gl.TRIANGLES, 0, triangleVertexPositionBuffer.numItems);
+        }
     }
 
     var lastTime = 0;
+    var points = [];
+    var currRotation = 0;
     function tick(now)
     {
         drawScene();
@@ -167,6 +175,7 @@
             var elapsed = now - lastTime;
         }
 
+        currRotation = (currRotation + 0.01) % (Math.PI * 2);
         lastTime = now;
         requestAnimationFrame(tick);
     }
@@ -176,7 +185,6 @@
         mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
         mat4.identity(mvMatrix);
     }
-
     function webGLStart() 
     {
         var canvas = document.getElementById("orbiting-text-canvas");
@@ -188,7 +196,12 @@
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
 
-        document.getElementById("test").innerHTML = JSON.stringify(getSphereVertices(39));
+        points = getFibonacciSpherePoints(390);
+        for (i = 0; i < 390; i++)
+        {
+            document.getElementById("test").innerHTML += points[i] + "<br />";
+        }
+
         tick();
     }
 </script>
